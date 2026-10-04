@@ -13,7 +13,7 @@
             <span class="status"><span aria-hidden="true">●</span> Isolated runtime online</span>
         </header>
         <section class="intro">
-            <div><p class="eyebrow">RUNTIME EXPERIMENT / 001</p><h1>Wonis Runtime Test<span class="title-dot">...</span></h1></div>
+            <div><p class="eyebrow">RUNTIME EXPERIMENT / 001</p><h1>Wonis Runtime Test<span class="title-dot"></span></h1></div>
             <p class="intro-copy">Jij bent de laatste verdedigingslinie.<br>Ontwijk projectielen. Schiet terug.</p>
         </section>
         <section class="machine" aria-label="Space Invaders spel">
