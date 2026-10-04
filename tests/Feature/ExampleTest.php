@@ -15,5 +15,9 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
+        $response->assertSee('Wonis Runtime Test');
+        $response->assertSee('Start missie');
+        $response->assertSee('/js/arcade.js');
+        $response->assertSee('Isolated runtime online');
     }
 }
