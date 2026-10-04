@@ -14,7 +14,7 @@
         </header>
         <section class="intro">
             <div><p class="eyebrow">RUNTIME EXPERIMENT / 001</p><h1>Wonis Runtime Test<span class="title-dot"></span></h1></div>
-            <p class="intro-copy">Jij bent de aller allerlaatste verdedigingslinie.<br>Ontwijk projectielen. Schiet terug.</p>
+            <p class="intro-copy">Jij bent de allerlaatste verdedigingslinie.<br>Ontwijk projectielen. Schiet terug...</p>
         </section>
         <section class="machine" aria-label="Space Invaders spel">
             <div class="hud">
