@@ -15,8 +15,8 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('Wonis Runtime');
-        $response->assertDontSee('Wonis Runtime Test');
+        $response->assertSee('Marjolein');
+        $response->assertDontSee('Marjolein Test');
         $response->assertDontSee('Jij bent de allerlaatste verdedigingslinie.');
         $response->assertSee('Start missie');
         $response->assertSee('/js/arcade.js');
