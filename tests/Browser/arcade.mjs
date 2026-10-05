@@ -15,7 +15,7 @@ try {
         await page.addInitScript(() => {
             const raf = window.requestAnimationFrame.bind(window);
             window.testFrames = { pending: 0, maximum: 0 };
-            window.requestAnimationFrame = callback => {
+            window.testRequestFrame = callback => {
                 testFrames.pending++;
                 testFrames.maximum = Math.max(testFrames.maximum, testFrames.pending);
                 return raf(now => { testFrames.pending--; callback(now); });
@@ -23,7 +23,7 @@ try {
         });
         await page.route('**/js/arcade.js*', async route => {
             const response = await route.fetch();
-            await route.fulfill({ response, body: (await response.text()).replace('const game = new Game();', 'const game = window.testGame = new Game();') + '\nwindow.testRender = () => ({ cache: spriteCache.size, effects: effects.length, pending: framePending });' });
+            await route.fulfill({ response, body: (await response.text()).replace('const game = new Game();', 'const game = window.testGame = new Game();').replaceAll('requestAnimationFrame(frame)', 'window.testRequestFrame(frame)') + '\nwindow.testRender = () => ({ cache: spriteCache.size, effects: effects.length, pending: framePending });' });
         });
         await page.goto(process.env.ARCADE_URL || 'http://127.0.0.1:8080/');
         await page.locator('#start').click();
