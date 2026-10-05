@@ -30,7 +30,7 @@
                 <div class="overlay" id="overlay">
                     <p class="eyebrow" id="overlay-label">SECTOR 01 / EARTH ORBIT</p>
                     <h2 id="overlay-title">STOP THE<br><span>INVASION</span></h2>
-                    <p id="overlay-copy">Ontwijk hun Wouter vuur en schiet terug met SPATIE.<br>Houd ingedrukt voor continu vuur. 100 punten per alien.</p>
+                    <p id="overlay-copy">Ontwijk hun vuur en schiet terug met SPATIE.<br>Houd ingedrukt voor continu vuur. 100 punten per alien!</p>
                     <button class="primary" id="start">Start missie <span aria-hidden="true">↗</span></button>
                     <small id="motion-note">Muis · touch · pijltjestoetsen</small>
                 </div>
