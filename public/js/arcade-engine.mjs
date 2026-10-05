@@ -9,6 +9,8 @@ export class Game {
         this.shots = [];
         this.destroyed = new Set();
         this.bonus = 0;
+        this.levelComplete = false;
+        this.events = [];
         this.wave = 1;
         this.cooldown = 0;
         this.time = 0;
@@ -19,19 +21,30 @@ export class Game {
         this.running = false;
         this.over = false;
     }
+    nextWave() {
+        if (!this.levelComplete) return false;
+        this.wave++;
+        this.destroyed.clear();
+        this.levelComplete = false;
+        this.spawn = 1;
+        this.cooldown = 0;
+        this.shield = Math.max(this.shield, 1.6);
+        return true;
+    }
     aliens() {
         const offset = Math.sin(Math.floor(this.time * 3) / 8) * 80;
         return Array.from({ length: 24 }, (_, i) => ({ id: i, x: 140 + (i % 8) * 100 + offset, y: 75 + Math.floor(i / 8) * 52, row: Math.floor(i / 8) })).filter(alien => !this.destroyed.has(alien.id));
     }
     fire() {
-        if (!this.running || this.over || this.cooldown > 0) return false;
+        if (!this.running || this.over || this.levelComplete || this.cooldown > 0) return false;
         this.shots.push({ x: this.ship.x, y: this.ship.y - 24 });
         this.cooldown = .2;
         return true;
     }
     move(x, y) { this.ship.x = clamp(x, 24, WIDTH - 24); this.ship.y = clamp(y, 270, HEIGHT - 35); }
     update(dt) {
-        if (!this.running || this.over) return;
+        if (!this.running || this.over || this.levelComplete) return;
+        this.events = [];
         dt = clamp(dt, 0, 0.05);
         this.time += dt;
         this.cooldown = Math.max(0, this.cooldown - dt);
@@ -43,16 +56,19 @@ export class Game {
             if (target) {
                 this.destroyed.add(target.id);
                 this.bonus += 100;
+                this.events.push({ type: 'hit', x: target.x, y: target.y, row: target.row });
                 shot.hit = true;
             }
         }
         this.shots = this.shots.filter(shot => !shot.hit && shot.y > -20);
+        this.score = Math.floor(this.time * 10) + this.bonus;
         if (this.destroyed.size === 24) {
-            this.wave++;
-            this.destroyed.clear();
+            this.levelComplete = true;
+            this.running = false;
             this.shots = [];
             this.bullets = [];
-            this.spawn = 1;
+            this.events.push({ type: 'complete' });
+            return;
         }
         this.score = Math.floor(this.time * 10) + this.bonus;
         this.shield = Math.max(0, this.shield - dt);
@@ -74,6 +90,7 @@ export class Game {
             if (!this.shield && Math.hypot(oldX + dx * t - this.ship.x, oldY + dy * t - this.ship.y) < 19 + bullet.radius) {
                 bullet.hit = true;
                 this.lives--;
+                this.events.push({ type: 'damage', x: this.ship.x, y: this.ship.y });
                 this.shield = 1.6;
                 if (this.lives === 0) { this.over = true; this.running = false; break; }
             }

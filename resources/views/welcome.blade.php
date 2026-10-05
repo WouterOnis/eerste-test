@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Runtime test — Space Arcade</title>
-    <link rel="stylesheet" href="/css/arcade.css">
+    <link rel="stylesheet" href="/css/arcade.css?v={{ filemtime(public_path('css/arcade.css')) }}">
 </head>
 <body>
     <main class="arcade">
@@ -22,11 +22,17 @@
                 <div><span class="label">LEVENS</span><strong id="lives" class="hearts" aria-label="3 levens">♥ ♥ ♥</strong></div>
                 <button id="pause" disabled aria-label="Spel pauzeren">Ⅱ <span>Pauze</span></button>
             </div>
+            <div class="wave-progress">
+                <span id="formation">FORMATIE · 24 BEESTJES</span>
+                <progress id="progress" max="24" value="0" aria-label="Verslagen beestjes in deze golf"></progress>
+                <span id="cleared">0 / 24</span>
+            </div>
             <div class="arena" id="arena">
                 <canvas id="game" tabindex="0" aria-label="Speelveld. Beweeg met je muis, sleep met je vinger of gebruik de pijltjestoetsen. Schiet met spatie, muisklik of de vuurknop. Druk op Escape om te pauzeren.">Je browser moet canvas ondersteunen om dit spel te spelen.</canvas>
                 <button id="fire" class="fire-button" disabled aria-label="Vuren, houd ingedrukt voor continu vuur">⌖ VUUR</button>
                 <div class="scanlines" aria-hidden="true"></div>
                 <div class="overlay" id="overlay">
+                    <div class="level-badge" id="level-badge" hidden aria-hidden="true">✦</div>
                     <p class="eyebrow" id="overlay-label">SECTOR 01 / EARTH ORBIT</p>
                     <h2 id="overlay-title">STOP THE<br><span>INVASION</span></h2>
                     <p id="overlay-copy">Ontwijk hun vuur en schiet terug met SPATIE.<br>Houd ingedrukt voor continu vuur. 100 punten per alien!</p>
