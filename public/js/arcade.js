@@ -31,17 +31,19 @@ function sprite(pattern, x, y, color, pixel = 4) {
     const key = color + pattern.join('');
     let image = spriteCache.get(key);
     const sx = canvas.width / WIDTH, sy = canvas.height / HEIGHT;
+    // Shadow blur uses backing pixels, so keep padding independent of display size.
+    const originX = 22 + 32 / sx, originY = 16 + 32 / sy;
     if (!image) {
-        image = surface(Math.ceil(108 * sx), Math.ceil(96 * sy));
+        image = surface(Math.ceil(44 * sx) + 64, Math.ceil(32 * sy) + 64);
         const paint = image.getContext('2d');
         paint.setTransform(sx, 0, 0, sy, 0, 0);
         paint.shadowColor = color; paint.shadowBlur = 12; paint.fillStyle = color;
         pattern.forEach((row, iy) => [...row].forEach((cell, ix) => {
-            if (cell === '1') paint.fillRect(54 + (ix - row.length / 2) * pixel, 48 + (iy - pattern.length / 2) * pixel, pixel, pixel);
+            if (cell === '1') paint.fillRect(originX + (ix - row.length / 2) * pixel, originY + (iy - pattern.length / 2) * pixel, pixel, pixel);
         }));
         spriteCache.set(key, image);
     }
-    ctx.drawImage(image, Math.round(x) - 54, Math.round(y) - 48, image.width / sx, image.height / sy);
+    ctx.drawImage(image, Math.round(x) - originX, Math.round(y) - originY, image.width / sx, image.height / sy);
 }
 function cacheBackdrop() {
     backdrop = surface(canvas.width, canvas.height);
