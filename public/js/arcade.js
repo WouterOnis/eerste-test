@@ -7,6 +7,9 @@ const keys = new Set();
 const firingPointers = new Set();
 let best = 0, previous = 0;
 let effects = [], damageGlow = 0;
+let framePending = false, hudState = "";
+const spriteCache = new Map();
+let backdrop;
 const colors = ['#bda0ff', '#91bcff', '#b5ff66'];
 try { best = Math.max(0, Number(localStorage.getItem('wonis-arcade-best')) || 0); } catch {}
 const stars = Array.from({ length: 100 }, () => ({ x: Math.random() * WIDTH, y: Math.random() * HEIGHT, size: Math.random() > .85 ? 2 : 1 }));
@@ -16,15 +19,45 @@ const sprites = [
     ['00001110000','00111111100','01111111110','11011011011','11111111111','00100100100','01011011010','10100000101']
 ];
 const ship = ['00000100000','00001110000','00001110000','01011111010','11111111111','11111111111','11001110011','00001010000'];
+// Cache the exact pixel artwork and per-pixel glow at the current backing resolution.
+// Eight variants maximum (two poses per alien and two ship colours); resize replaces them.
+const alienPoses = sprites.map(pattern => [pattern, [...pattern.slice(0, 6), pattern[7], pattern[6]]]);
+function surface(width, height) {
+    const image = document.createElement('canvas');
+    image.width = width; image.height = height;
+    return image;
+}
 function sprite(pattern, x, y, color, pixel = 4) {
-    ctx.shadowColor = color; ctx.shadowBlur = 12;
-    ctx.fillStyle = color;
-    pattern.forEach((row, iy) => [...row].forEach((cell, ix) => {
-        if (cell === '1') ctx.fillRect(Math.round(x + (ix - row.length / 2) * pixel), Math.round(y + (iy - pattern.length / 2) * pixel), pixel, pixel);
-    }));
-    ctx.shadowBlur = 0;
+    const key = color + pattern.join('');
+    let image = spriteCache.get(key);
+    const sx = canvas.width / WIDTH, sy = canvas.height / HEIGHT;
+    if (!image) {
+        image = surface(Math.ceil(108 * sx), Math.ceil(96 * sy));
+        const paint = image.getContext('2d');
+        paint.setTransform(sx, 0, 0, sy, 0, 0);
+        paint.shadowColor = color; paint.shadowBlur = 12; paint.fillStyle = color;
+        pattern.forEach((row, iy) => [...row].forEach((cell, ix) => {
+            if (cell === '1') paint.fillRect(54 + (ix - row.length / 2) * pixel, 48 + (iy - pattern.length / 2) * pixel, pixel, pixel);
+        }));
+        spriteCache.set(key, image);
+    }
+    ctx.drawImage(image, Math.round(x) - 54, Math.round(y) - 48, image.width / sx, image.height / sy);
+}
+function cacheBackdrop() {
+    backdrop = surface(canvas.width, canvas.height);
+    const paint = backdrop.getContext('2d');
+    paint.setTransform(canvas.width / WIDTH, 0, 0, canvas.height / HEIGHT, 0, 0);
+    paint.fillStyle = '#090d19'; paint.fillRect(0, 0, WIDTH, HEIGHT);
+    const nebula = paint.createRadialGradient(750, 180, 0, 650, 220, 620);
+    nebula.addColorStop(0, '#32265888'); nebula.addColorStop(.5, '#12344044'); nebula.addColorStop(1, '#090d1900');
+    paint.fillStyle = nebula; paint.fillRect(0, 0, WIDTH, HEIGHT);
+    paint.strokeStyle = '#bda0ff18'; paint.lineWidth = 2;
+    paint.beginPath(); paint.arc(850, 100, 190, 0, Math.PI * 2); paint.stroke();
 }
 function hud() {
+    const state = [game.destroyed.size, game.levelComplete, game.wave, game.score, best, game.lives].join(':');
+    if (state === hudState) return;
+    hudState = state;
     $('progress').value = game.destroyed.size;
     $('cleared').textContent = `${game.destroyed.size} / 24`;
     $('formation').textContent = game.levelComplete ? 'FORMATIE VERSLAGEN' : `FORMATIE · ${24 - game.destroyed.size} BEESTJES`;
@@ -37,12 +70,7 @@ function hud() {
 function draw() {
     const sx = canvas.width / WIDTH, sy = canvas.height / HEIGHT;
     ctx.setTransform(sx, 0, 0, sy, 0, 0);
-    ctx.fillStyle = '#090d19'; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    const nebula = ctx.createRadialGradient(750, 180, 0, 650, 220, 620);
-    nebula.addColorStop(0, '#32265888'); nebula.addColorStop(.5, '#12344044'); nebula.addColorStop(1, '#090d1900');
-    ctx.fillStyle = nebula; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.strokeStyle = '#bda0ff18'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(850, 100, 190, 0, Math.PI * 2); ctx.stroke();
+    ctx.drawImage(backdrop, 0, 0, WIDTH, HEIGHT);
     for (const star of stars) {
         ctx.fillStyle = star.size === 2 ? '#687c94' : '#344459';
         ctx.fillRect(star.x, (star.y + (reduced.matches ? 0 : game.time * star.size * 5)) % HEIGHT, star.size, star.size);
@@ -51,8 +79,7 @@ function draw() {
     for (let i = -6; i <= 6; i++) { ctx.beginPath(); ctx.moveTo(WIDTH / 2 + i * 40, 400); ctx.lineTo(WIDTH / 2 + i * 170, HEIGHT); ctx.stroke(); }
     for (let y = 430; y < HEIGHT; y += 45) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke(); }
     for (const alien of game.aliens()) {
-        let pattern = sprites[alien.row];
-        if (Math.floor(game.time * 3) % 2) pattern = [...pattern.slice(0, 6), pattern[7], pattern[6]];
+        const pattern = alienPoses[alien.row][Math.floor(game.time * 3) % 2];
         sprite(pattern, alien.x, alien.y, colors[alien.row]);
     }
     for (const bullet of game.bullets) {
@@ -110,7 +137,10 @@ function levelUp() {
 }
 function resize() {
     const rect = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
-    canvas.width = Math.round(rect.width * dpr); canvas.height = Math.round(rect.height * dpr); draw();
+    const width = Math.max(1, Math.round(rect.width * dpr)), height = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width === width && canvas.height === height && backdrop) return;
+    canvas.width = width; canvas.height = height;
+    spriteCache.clear(); cacheBackdrop(); draw();
 }
 function showOverlay(label, title, copy, button) {
     $('overlay').setAttribute('data-mode', 'default');
@@ -147,7 +177,7 @@ $('start').addEventListener('click', () => {
     $('overlay').hidden = true; $('pause').disabled = false;
     $('fire').disabled = false;
     $('state').textContent = 'Missie actief · ontwijk en schiet terug';
-    canvas.focus(); hud();
+    canvas.focus(); hud(); scheduleFrame();
 });
 $('pause').addEventListener('click', () => { pause(); $('start').focus(); });
 function steer(event) {
@@ -196,9 +226,17 @@ window.addEventListener('keyup', event => {
 window.addEventListener('blur', pause);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('resize', resize);
-function motionNote() { $('motion-note').textContent = reduced.matches ? 'Rustige weergave: decor staat stil. Tijdens het spelen bewegen aliens en projectielen.' : 'Sturen: muis / pijltjes · Vuren: spatie / klik / VUUR (vasthouden kan)'; draw(); }
-reduced.addEventListener('change', motionNote);
+function motionNote() { $('motion-note').textContent = reduced.matches ? 'Rustige weergave: decor staat stil. Tijdens het spelen bewegen aliens en projectielen.' : 'Sturen: muis / pijltjes · Vuren: spatie / klik / VUUR (vasthouden kan)'; }
+reduced.addEventListener('change', () => { motionNote(); draw(); });
+function scheduleFrame() {
+    if (framePending) return;
+    framePending = true;
+    requestAnimationFrame(frame);
+}
 function frame(now) {
+    framePending = false;
+    // Pause freezes effects too. Completed waves finish their brief feedback, then sleep.
+    if (!game.running && !((game.levelComplete || game.over) && (effects.length || damageGlow > 0))) return;
     const dt = Math.min((now - previous) / 1000, .05); previous = now;
     if (game.running) {
         if (keys.size) game.move(game.ship.x + ((keys.has('ArrowRight') ? 1 : 0) - (keys.has('ArrowLeft') ? 1 : 0)) * dt * 500, game.ship.y + ((keys.has('ArrowDown') ? 1 : 0) - (keys.has('ArrowUp') ? 1 : 0)) * dt * 420);
@@ -217,6 +255,6 @@ function frame(now) {
         damageGlow = Math.max(0, damageGlow - dt * 1.5);
     }
     draw();
-    requestAnimationFrame(frame);
+    if (game.running || effects.length || damageGlow > 0) scheduleFrame();
 }
-hud(); resize(); motionNote(); requestAnimationFrame(frame);
+hud(); motionNote(); resize();
