@@ -8,8 +8,8 @@ try {
   await page.route('**/js/arcade.js*', async route => {
    const response = await route.fetch();
    let body = await response.text();
-   body = body.replace('function draw() {', 'function draw() { const drawStart = performance.now(); try {');
-   body = body.replace('function feedback(event)', '} finally { window.drawTimes.push(performance.now() - drawStart); } }\nfunction feedback(event)').replace('\n}\n} finally', '\n} finally');
+   body = body.replace('function draw() {', 'function measuredDraw() {');
+   body += '\nfunction draw() { const start = performance.now(); measuredDraw(); window.drawTimes.push(performance.now() - start); }';
    await route.fulfill({ response, body: 'window.drawTimes = [];\n' + body });
   });
   const errors = []; page.on('pageerror', e => errors.push(e.message));
