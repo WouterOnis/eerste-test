@@ -3,17 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Marjolein — Space Arcade</title>
+    <title>Runtime test — Space Arcade</title>
     <link rel="stylesheet" href="/css/arcade.css">
 </head>
 <body>
     <main class="arcade">
         <header class="header">
-            <a class="brand" href="/" aria-label="Marjolein home"><span class="brand-icon" aria-hidden="true">▟</span> WONIS<span class="muted"> / ARCADE</span></a>
+            <a class="brand" href="/" aria-label="Runtime test home"><span class="brand-icon" aria-hidden="true">▟</span> WONIS<span class="muted"> / ARCADE</span></a>
             <span class="status"><span aria-hidden="true">●</span> Isolated runtime online</span>
         </header>
         <section class="intro">
-            <div><p class="eyebrow">RUNTIME EXPERIMENT / 001</p><h1>Marjolein<span class="title-dot"></span></h1></div>
+            <div><p class="eyebrow">RUNTIME EXPERIMENT / 001</p><h1>Runtime test<span class="title-dot"></span></h1></div>
         </section>
         <section class="machine" aria-label="Space Invaders spel">
             <div class="hud">
