@@ -10,6 +10,7 @@ test('space fires without canvas focus, holds, releases and stays inactive when 
     const context = new Proxy({}, { get: (_, key) => key === 'createRadialGradient' ? () => ({ addColorStop() {} }) : () => {} });
     const document = {
         activeElement: null,
+        createElement: () => ({ getContext: () => context }),
         getElementById(id) {
             if (!elements.has(id)) elements.set(id, {
                 handlers: {},
