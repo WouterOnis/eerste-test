@@ -94,3 +94,26 @@ kbd { font: inherit; font-size: 10px; border: 1px solid #ded5ec; border-bottom-w
     #start { transition: none; }
     #start:hover:not(:disabled), #start:active:not(:disabled) { transform: none; }
 }
+.wave-progress { display: flex; align-items: center; gap: 18px; padding: 12px 28px; background: #f5f2fc; color: #665083; font: 600 10px ui-monospace, monospace; letter-spacing: 1px; }
+.wave-progress > span { white-space: nowrap; }
+.wave-progress progress { flex: 1; width: 100%; height: 5px; border: 0; border-radius: 8px; overflow: hidden; background: #e4dcee; accent-color: #7955cf; }
+.wave-progress progress::-webkit-progress-bar { background: #e4dcee; }
+.wave-progress progress::-webkit-progress-value { background: linear-gradient(90deg, #9771ee, #398978); transition: width .2s ease; }
+.wave-progress progress::-moz-progress-bar { background: #7955cf; }
+.level-badge { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 18px; border: 1px solid #70eed380; border-radius: 20px; background: #70eed315; color: #70eed3; font-size: 38px; box-shadow: 0 0 48px #70eed329; }
+.level-badge[hidden] { display: none; }
+.overlay[data-mode="level"] { background: radial-gradient(ellipse at center, #214344ed, #101324df 75%); animation: level-reveal .45s ease-out both; }
+.overlay[data-mode="level"] h2 { color: #a4ffe6; text-shadow: 0 0 40px #70eed355; }
+.overlay[data-mode="level"] .eyebrow { color: #bda0ff; }
+.overlay[data-mode="level"] #overlay-copy { max-width: 440px; }
+button { transition: background-color .15s, box-shadow .15s; }
+#game { cursor: crosshair; }
+@keyframes level-reveal { from { opacity: 0; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
+@media (max-width: 650px) {
+    .wave-progress { padding: 12px 14px; gap: 10px; font-size: 8px; letter-spacing: .5px; }
+    .level-badge { width: 48px; height: 48px; font-size: 28px; margin-bottom: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .overlay[data-mode="level"] { animation: none; }
+    button, .wave-progress progress::-webkit-progress-value { transition: none; }
+}
