@@ -22,13 +22,13 @@ try {
   await page.waitForTimeout(2000);
   const after = await metrics();
   const idleDraws = await page.evaluate(n => drawTimes.length - n, count);
-  await page.locator('#start').click(); await page.waitForTimeout(2000);
+  await page.locator('#start').click(); const playBefore = await metrics(); await page.waitForTimeout(2000); const playAfter = await metrics();
   const playing = await page.evaluate(() => { const a = drawTimes.slice(-60).sort((a,b) => a-b); return { medianDrawMs: a[Math.floor(a.length/2)], p95DrawMs: a[Math.floor(a.length*.95)] }; });
   await page.locator('#pause').click(); await page.waitForTimeout(100);
   const paused = await page.evaluate(() => drawTimes.length); await page.waitForTimeout(500);
   if (process.env.ASSERT_IDLE) { assert.equal(idleDraws, 0); assert.equal(await page.evaluate(() => drawTimes.length), paused); }
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ mobile, initial, idleDraws, idleTaskMs: (after.TaskDuration-before.TaskDuration)*1000, playing }));
+  console.log(JSON.stringify({ mobile, initial, idleDraws, idleTaskMs: (after.TaskDuration-before.TaskDuration)*1000, playingTaskMs: (playAfter.TaskDuration-playBefore.TaskDuration)*1000, playing }));
   await page.close();
  }
 } finally { await browser.close(); }
