@@ -1,5 +1,6 @@
 // Run with the same external Playwright setup as arcade.mjs.
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ headless: true });
 try {
@@ -7,7 +8,7 @@ try {
   const page = await browser.newPage({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 1000 }, deviceScaleFactor: mobile ? 2 : 1 });
   await page.route('**/js/arcade.js*', async route => {
    const response = await route.fetch();
-   let body = await response.text();
+   let body = process.env.ARCADE_SCRIPT ? readFileSync(process.env.ARCADE_SCRIPT, 'utf8') : await response.text();
    body = body.replace('function draw() {', 'function measuredDraw() {');
    body += '\nfunction draw() { const start = performance.now(); measuredDraw(); window.drawTimes.push(performance.now() - start); }';
    await route.fulfill({ response, body: 'window.drawTimes = [];\n' + body });
