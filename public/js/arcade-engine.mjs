@@ -70,7 +70,6 @@ export class Game {
             this.events.push({ type: 'complete' });
             return;
         }
-        this.score = Math.floor(this.time * 10) + this.bonus;
         this.shield = Math.max(0, this.shield - dt);
         this.spawn -= dt;
         if (this.spawn <= 0) {
