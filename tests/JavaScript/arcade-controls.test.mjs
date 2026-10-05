@@ -7,7 +7,7 @@ import { Game, WIDTH, HEIGHT } from '../../public/js/arcade-engine.mjs';
 test('space fires without canvas focus, holds, releases and stays inactive when paused', () => {
     const handlers = new Map(), elements = new Map();
     let nextFrame;
-    const context = new Proxy({}, { get: () => () => {} });
+    const context = new Proxy({}, { get: (_, key) => key === 'createRadialGradient' ? () => ({ addColorStop() {} }) : () => {} });
     const document = {
         activeElement: null,
         getElementById(id) {

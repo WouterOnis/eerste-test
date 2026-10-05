@@ -52,11 +52,24 @@ test('missed shots are removed without damaging aliens', () => {
     g.shots = [{ x: 20, y: 0 }]; g.update(.05);
     assert.equal(g.shots.length, 0); assert.equal(g.aliens().length, 24); assert.equal(g.bonus, 0);
 });
-test('clearing formation starts a new wave and restart clears weapon state', () => {
+test('last alien triggers a safe level-up; continuation preserves score and lives', () => {
     const g = new Game(); g.running = true;
     g.destroyed = new Set(Array.from({ length: 23 }, (_, i) => i));
     g.shots = [{ x: 840, y: 208 }]; g.update(.05);
-    assert.equal(g.wave, 2); assert.equal(g.aliens().length, 24); assert.equal(g.bonus, 100);
+    assert.equal(g.wave, 1); assert.equal(g.aliens().length, 0); assert.equal(g.bonus, 100);
+    assert.equal(g.levelComplete, true); assert.equal(g.running, false);
+    assert.equal(g.events.filter(event => event.type === 'complete').length, 1);
+    const score = g.score, time = g.time, lives = g.lives;
+    for (let i = 0; i < 100; i++) g.update(.05);
+    assert.equal(g.time, time); assert.equal(g.score, score); assert.equal(g.lives, lives);
+    assert.equal(g.fire(), false);
+    assert.equal(g.nextWave(), true);
+    assert.equal(g.nextWave(), false);
+    assert.equal(g.wave, 2); assert.equal(g.aliens().length, 24);
+    assert.equal(g.score, score); assert.equal(g.lives, lives);
+    assert.equal(g.levelComplete, false);
+    g.running = true; g.update(.05);
+    assert.equal(g.events.length, 0);
     assert.equal(g.bullets.length, 0); assert.equal(g.shots.length, 0);
     g.fire(); g.reset(); assert.equal(g.wave, 1); assert.equal(g.shots.length, 0);
     assert.equal(g.bonus, 0); assert.equal(g.cooldown, 0); assert.equal(g.destroyed.size, 0);
