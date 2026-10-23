@@ -13,6 +13,8 @@ import {
     createSnake,
     createBreakout,
     createPacman,
+    PACMAN_STEP_MS,
+    pacmanPosition,
     MAZE,
     shuffled,
 } from "./games";
@@ -58,7 +60,7 @@ const canvasGames = {
         factory: createPacman,
         width: 456,
         height: 456,
-        interval: () => 125,
+        interval: () => PACMAN_STEP_MS,
         draw: drawPacman,
     },
     breakout: {
@@ -271,7 +273,7 @@ function setPaused(value) {
         resetHeldControls();
     }
     lastTime = 0;
-    accumulated = 0;
+    if (currentId !== "pacman") accumulated = 0;
 }
 function createCanvas(width, height) {
     canvas = document.createElement("canvas");
@@ -407,10 +409,14 @@ function drawPacman(time) {
         left: Math.PI,
         up: -Math.PI / 2,
     };
+    const progress = engine.started && !engine.ended
+        ? accumulated / PACMAN_STEP_MS
+        : 1;
+    const player = pacmanPosition(engine.previousPlayer, engine.player, progress);
     const angle = angles[engine.direction];
     const mouth = 0.15 + Math.abs(Math.sin(time / 100)) * 0.3;
     context.save();
-    context.translate(engine.player.x * cell + 12, engine.player.y * cell + 12);
+    context.translate(player.x * cell + 12, player.y * cell + 12);
     context.rotate(angle);
     context.beginPath();
     context.moveTo(0, 0);
@@ -422,8 +428,14 @@ function drawPacman(time) {
     context.restore();
     engine.ghosts.forEach((ghost, i) => {
         if (ghost.cooldown > 0) return;
-        const x = ghost.x * cell + 3,
-            y = ghost.y * cell + 3;
+        const previous = engine.previousGhosts?.[i];
+        const position = pacmanPosition(
+            previous?.cooldown > 0 ? null : previous,
+            ghost,
+            progress,
+        );
+        const x = position.x * cell + 3,
+            y = position.y * cell + 3;
         roundRect(
             x,
             y,

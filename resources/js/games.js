@@ -105,6 +105,19 @@ export const MAZE = [
     "###################",
 ];
 
+export const PACMAN_STEP_MS = 180;
+
+export function pacmanPosition(previous, current, progress) {
+    // Respawning must snap to the start rather than slide through maze walls.
+    if (!previous || Math.abs(current.x - previous.x) + Math.abs(current.y - previous.y) > 1)
+        return current;
+    const fraction = Math.max(0, Math.min(1, progress));
+    return {
+        x: previous.x + (current.x - previous.x) * fraction,
+        y: previous.y + (current.y - previous.y) * fraction,
+    };
+}
+
 export function createPacman(random = Math.random) {
     const start = { x: 9, y: 9 };
     const ghostStarts = [
@@ -164,6 +177,8 @@ export function createPacman(random = Math.random) {
     }
     game.step = () => {
         if (!game.started || game.ended) return;
+        game.previousPlayer = { ...game.player };
+        game.previousGhosts = game.ghosts.map((ghost) => ({ ...ghost }));
         game.ticks++;
         game.ghosts.forEach((ghost) => {
             if (ghost.cooldown > 0) ghost.cooldown--;

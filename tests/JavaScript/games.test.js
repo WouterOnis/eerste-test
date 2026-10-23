@@ -4,6 +4,7 @@ import {
     createSnake,
     createBreakout,
     createPacman,
+    pacmanPosition,
     MAZE,
     shuffled,
 } from "../../resources/js/games.js";
@@ -170,4 +171,16 @@ test("Memory shuffle preserves each pair without changing the input", () => {
     assert.notDeepEqual(result, input);
     assert.deepEqual([...result].sort(), input);
     assert.deepEqual(input, [1, 1, 2, 2, 3, 3, 4, 4]);
+});
+
+test("Pacman draws intermediate positions without moving the collision grid", () => {
+    const game = createPacman(() => 0.5);
+    game.turn("left");
+    game.step();
+    assert.deepEqual(pacmanPosition(game.previousPlayer, game.player, 0), { x: 9, y: 9 });
+    assert.deepEqual(pacmanPosition(game.previousPlayer, game.player, 0.5), { x: 8.5, y: 9 });
+    assert.deepEqual(pacmanPosition(game.previousPlayer, game.player, 1), { x: 8, y: 9 });
+    assert.deepEqual(game.player, { x: 8, y: 9 });
+    assert.deepEqual(pacmanPosition({ x: 1, y: 1 }, game.player, 0.5), game.player);
+    assert.deepEqual(pacmanPosition(game.player, game.player, 0.5), game.player);
 });
