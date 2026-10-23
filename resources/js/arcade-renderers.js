@@ -1,3 +1,4 @@
+import { raised, sphere, backdrop, gradient } from "./game-drawing.js";
 const COLORS = [
     "#26303b",
     "#a8ccef",
@@ -9,14 +10,10 @@ const COLORS = [
     "#91d5bc",
 ];
 function block(context, x, y, size, color) {
-    context.fillStyle = color;
-    context.fillRect(x + 1, y + 1, size - 2, size - 2);
-    context.fillStyle = "#ffffff40";
-    context.fillRect(x + 2, y + 2, size - 4, 3);
+    raised(context, x + 1, y + 1, size - 2, size - 2, 3, color);
 }
 export function renderTetris(context, game) {
-    context.fillStyle = "#151c25";
-    context.fillRect(0, 0, 400, 480);
+    backdrop(context, 400, 480, "#2b3749");
     game.board.forEach((row, y) =>
         row.forEach((value, x) =>
             block(context, x * 24, y * 24, 24, COLORS[value]),
@@ -70,8 +67,7 @@ export function renderTetris(context, game) {
     context.fillText("SPATIE DROP", 267, 431);
 }
 export function renderPong(context, game) {
-    context.fillStyle = "#1c302a";
-    context.fillRect(0, 0, 480, 360);
+    backdrop(context, 480, 360, "#315a4a");
     context.strokeStyle = "#ffffff30";
     context.lineWidth = 2;
     context.setLineDash([8, 10]);
@@ -80,13 +76,10 @@ export function renderPong(context, game) {
     context.lineTo(240, 360);
     context.stroke();
     context.setLineDash([]);
-    context.fillStyle = "#c7f36a";
-    context.fillRect(16, game.player, 10, 70);
+    raised(context, 16, game.player, 10, 70, 4, "#c7f36a");
+    raised(context, 454, game.opponent, 10, 70, 4, "#fff6df");
+    sphere(context, game.ball.x, game.ball.y, 6, "#fff6df");
     context.fillStyle = "#fff6df";
-    context.fillRect(454, game.opponent, 10, 70);
-    context.beginPath();
-    context.arc(game.ball.x, game.ball.y, 6, 0, Math.PI * 2);
-    context.fill();
     context.font = "bold 40px monospace";
     context.textAlign = "center";
     context.fillText(String(game.score), 180, 54);
@@ -99,8 +92,7 @@ export function renderPong(context, game) {
     context.textAlign = "left";
 }
 export function renderInvaders(context, game, time) {
-    context.fillStyle = "#141a2b";
-    context.fillRect(0, 0, 480, 430);
+    backdrop(context, 480, 430, "#30345e");
     context.fillStyle = "#ffffff50";
     for (let i = 0; i < 44; i++)
         context.fillRect((i * 73 + 11) % 480, (i * 47 + 19) % 420, 2, 2);
@@ -116,9 +108,8 @@ export function renderInvaders(context, game, time) {
     ];
     game.enemies.forEach((enemy) => {
         if (!enemy.alive) return;
-        context.fillStyle = ["#c7f36a", "#a8ccef", "#f1abc2", "#f6d965"][
-            enemy.row
-        ];
+        const color = ["#c7f36a", "#a8ccef", "#f1abc2", "#f6d965"][enemy.row];
+        context.fillStyle = gradient(context, enemy.x, enemy.y - 12, 0, 40, color);
         sprite.forEach((row, y) =>
             [...row].forEach((pixel, x) => {
                 if (pixel === "1")
@@ -133,7 +124,7 @@ export function renderInvaders(context, game, time) {
     });
     if (!game.safe || Math.floor(time / 90) % 2 === 0) {
         context.fillStyle = "#c7f36a";
-        context.fillRect(game.player - 16, 395, 32, 10);
+        raised(context, game.player - 16, 395, 32, 10, 3, "#c7f36a");
         context.fillRect(game.player - 10, 389, 20, 6);
         context.fillRect(game.player - 3, 381, 6, 8);
     }

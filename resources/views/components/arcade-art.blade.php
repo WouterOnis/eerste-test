@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" class="icon-library" aria-hidden="true">
+    <symbol id="art-asteroids" viewBox="0 0 320 200">
+        <g fill="none" stroke="#171b21" stroke-width="4" stroke-linejoin="round"><path d="m153 72 35 68-35-18-35 18Z" fill="#c7f36a"/><path d="m61 30 29 9 12 25-18 24-35-4-15-28Z" fill="#a8ccef"/><path d="m247 105 26-8 23 26-10 35-31 4-19-30Z" fill="#b6a0df"/><path d="m144 143 9 26 9-26" stroke="#ff794a"/><path d="M153 33v20m0-38v8m65 40 13-13m-16 119 9 9"/></g>
+    </symbol>
+    <symbol id="art-frogger" viewBox="0 0 320 200">
+        <path d="M20 48h280v55H20Z" fill="#a8ccef"/><path d="M20 119h280v61H20Z" fill="#273544"/><path d="M32 74h90m60 0h96" stroke="#b78b61" stroke-width="22"/><path d="M25 149h270" stroke="#fff6df" stroke-width="3" stroke-dasharray="15 15"/><g stroke="#171b21" stroke-width="4"><rect x="47" y="132" width="56" height="31" rx="5" fill="#ff794a"/><rect x="220" y="132" width="56" height="31" rx="5" fill="#f6d965"/><path d="M137 91h46v42h-46Z" fill="#c7f36a"/><circle cx="143" cy="92" r="10" fill="#c7f36a"/><circle cx="177" cy="92" r="10" fill="#c7f36a"/></g><path d="M143 89v6m34-6v6m-46 24h-12m70 0h12" stroke="#171b21" stroke-width="5"/>
+    </symbol>
     <symbol id="art-pacman" viewBox="0 0 320 200">
         <path d="M30 44h80v26H54v76h42m33-102h72v27h-42v34h75v42h-90m130-104h-42v31h42v41" fill="none" stroke="#171b21" stroke-width="9" stroke-linejoin="round"/>
         <path d="M137 86a33 33 0 1 0 0 52l-29-26Z" fill="#fff39a" stroke="#171b21" stroke-width="4"/><g fill="#171b21"><circle cx="159" cy="112" r="4"/><circle cx="184" cy="112" r="4"/><circle cx="207" cy="112" r="4"/></g>

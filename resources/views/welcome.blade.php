@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f1e8">
-    <meta name="description" content="Welkom in Pixelclub. Negen gratis browsergames, van Pacman en Tetris tot Space Invaders en 2048. Kies een game en spelen maar!">
+    <meta name="description" content="Welkom in Pixelclub. Elf gratis browsergames, van Pacman en Tetris tot Space Invaders en 2048. Kies een game en spelen maar!">
     <title>Pixelclub — Jouw browser. Jouw speelhal.</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -34,9 +34,9 @@
     </section>
     <div class="ticker" aria-label="Gratis browsergames zonder downloads"><span>JUST ONE MORE GAME</span><span aria-hidden="true">✳</span><span>100% GRATIS</span><span aria-hidden="true">✳</span><span>NO DOWNLOADS</span><span aria-hidden="true">✳</span><span>ALL PLAY. NO WORK.</span><span aria-hidden="true">✳</span><span>JUST ONE MORE GAME</span></div>
     <section class="games-section" id="speelhal" aria-labelledby="games-title">
-        <div class="section-heading"><div><span class="eyebrow">KIES JE TEGENSTANDER. OF JE TIJDVERDRIJF.</span><h2 id="games-title">De speelhal <span>9 games</span></h2></div><div class="collection-note"><span class="new-dot"></span> Vier verse games erbij!<span class="hand-arrow" aria-hidden="true">↙</span></div></div>
+        <div class="section-heading"><div><span class="eyebrow">KIES JE TEGENSTANDER. OF JE TIJDVERDRIJF.</span><h2 id="games-title">De speelhal <span>11 games</span></h2></div><div class="collection-note"><span class="new-dot"></span> Zes verse games erbij!<span class="hand-arrow" aria-hidden="true">↙</span></div></div>
         <div class="collection-toolbar"><div class="filters" role="group" aria-label="Filter games op categorie">
-            <button class="filter active" data-category="all" aria-pressed="true"><svg><use href="#i-grid"/></svg>Alles <span>9</span></button>
+            <button class="filter active" data-category="all" aria-pressed="true"><svg><use href="#i-grid"/></svg>Alles <span>11</span></button>
             <button class="filter" data-category="arcade" aria-pressed="false"><svg><use href="#i-game"/></svg>Arcade</button>
             <button class="filter" data-category="puzzle" aria-pressed="false"><svg><use href="#i-grid"/></svg>Puzzel</button>
             <button class="filter" data-category="reflex" aria-pressed="false"><svg><use href="#i-bolt"/></svg>Reflex</button>
@@ -49,6 +49,8 @@
                 ['id' => 'invaders', 'title' => 'Space Invaders', 'category' => 'arcade', 'label' => 'Arcade', 'color' => 'purple', 'tag' => 'RED JE STUKJE UNIVERSUM.', 'description' => 'Een ruimteschip. Een leger aliens. Jij weet wat je moet doen.', 'search' => 'space invaders ruimte aliens schieten arcade', 'new' => true],
                 ['id' => 'snake', 'title' => 'Snake', 'category' => 'arcade', 'label' => 'Arcade', 'color' => 'green', 'tag' => 'NOG ÉÉN HAPJE.', 'description' => 'Klein beginnen, groot eindigen. Blijf uit je eigen knoop.', 'search' => 'snake slang eten arcade', 'new' => false],
                 ['id' => 'pong', 'title' => 'Pong', 'category' => 'arcade', 'label' => 'Arcade', 'color' => 'pink', 'tag' => 'TERUG NAAR HET BEGIN.', 'description' => 'Jij tegen de computer. De eerste met vijf punten wint.', 'search' => 'pong ping pong tennis bal computer arcade', 'new' => true],
+                ['id' => 'asteroids', 'title' => 'Asteroids', 'category' => 'arcade', 'label' => 'Arcade', 'color' => 'purple', 'tag' => 'RUIMTE VOOR ACTIE.', 'description' => 'Draai, geef gas en schiet de rotsen uit elkaar. Hoe lang houd jij stand?', 'search' => 'asteroids ruimte rotsen schieten arcade', 'new' => true],
+                ['id' => 'frogger', 'title' => 'Frogger', 'category' => 'arcade', 'label' => 'Arcade', 'color' => 'mint', 'tag' => 'SPRING NAAR DE OVERKANT.', 'description' => 'Ontwijk het verkeer en vaar mee op boomstammen. Breng vijf kikkers veilig thuis.', 'search' => 'frogger kikker verkeer rivier springen arcade', 'new' => true],
                 ['id' => '2048', 'title' => '2048', 'category' => 'puzzle', 'label' => 'Puzzel', 'color' => 'orange', 'tag' => 'KLEINE GETALLEN. GROTE PLANNEN.', 'description' => 'Schuif, combineer en reken je een weg naar 2048.', 'search' => '2048 getallen tegels samenvoegen puzzel', 'new' => true],
                 ['id' => 'breakout', 'title' => 'Breakout', 'category' => 'arcade', 'label' => 'Arcade', 'color' => 'peach', 'tag' => 'MAAK ER EEN PUINHOOP VAN.', 'description' => 'Hou de bal hoog en speel alle blokken aan diggelen.', 'search' => 'breakout blokken bal arcade', 'new' => false],
                 ['id' => 'memory', 'title' => 'Memory', 'category' => 'puzzle', 'label' => 'Puzzel', 'color' => 'mint', 'tag' => 'JE HEBT DIT EERDER GEZIEN.', 'description' => 'Zoek de perfecte match. Je geheugen heeft dit.', 'search' => 'memory kaarten geheugen paren puzzel', 'new' => false],
@@ -58,7 +60,7 @@
         <div class="game-grid">
             @foreach ($games as $game)
                 <article class="game-card tone-{{ $game['color'] }}" data-game="{{ $game['id'] }}" data-category="{{ $game['category'] }}" data-search="{{ $game['search'] }}">
-                    <div class="card-art"><span class="game-number">0{{ $loop->iteration }} / {{ strtoupper($game['label']) }}</span><button class="favorite" data-favorite="{{ $game['id'] }}" aria-label="{{ $game['title'] }} toevoegen aan favorieten" aria-pressed="false"><svg><use href="#i-heart"/></svg><span class="sr-only">Favoriet</span></button>
+                    <div class="card-art"><span class="game-number">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }} / {{ strtoupper($game['label']) }}</span><button class="favorite" data-favorite="{{ $game['id'] }}" aria-label="{{ $game['title'] }} toevoegen aan favorieten" aria-pressed="false"><svg><use href="#i-heart"/></svg><span class="sr-only">Favoriet</span></button>
                         @if ($game['new'])<span class="new-stamp">NIEUW!</span>@endif
                         <svg class="game-illustration" aria-hidden="true"><use href="#art-{{ $game['id'] }}"/></svg>
                         <span class="art-tag">{{ $game['tag'] }}</span>
@@ -82,6 +84,6 @@
     <div class="extra-controls"><button class="button button-lime" id="action-game" hidden><svg><use href="#i-bolt"/></svg><span>Actie</span></button></div>
     <span class="session-note">Scores, favorieten en laatst gespeelde games gelden voor deze sessie.</span>
 </dialog>
-<dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title"><div class="dialog-header"><h2 id="help-title">Zo werkt de speelhal.</h2><button class="button button-outline" id="help-close"><svg><use href="#i-close"/></svg>Sluiten</button></div><p>Kies één van de negen games. Je vindt de bediening en spelregels boven het speelveld. Je kunt spelen met je toetsenbord of de schermknoppen. Bij Pong en Breakout werken ook je muis en vinger; 2048 kun je swipen.</p><p>Met het hartje bewaar je een game bij je favorieten voor deze sessie. Bij <strong>Laatst gespeeld</strong> vind je games die je hebt geopend. Liever een verrassing? Gooi de dobbelsteen!</p><p>Met <strong>Pauze</strong> zet je bewegende games stil. Bij het verlaten van het tabblad pauzeren ze automatisch. <strong>Opnieuw</strong> start een nieuw potje.</p><p>Geen account nodig. Favorieten en scores worden niet permanent opgeslagen.</p><button class="button button-lime" id="help-done"><svg><use href="#i-play"/></svg>Begrepen, spelen maar!</button></dialog>
+<dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title"><div class="dialog-header"><h2 id="help-title">Zo werkt de speelhal.</h2><button class="button button-outline" id="help-close"><svg><use href="#i-close"/></svg>Sluiten</button></div><p>Kies één van de elf games. Je vindt de bediening en spelregels boven het speelveld. Je kunt spelen met je toetsenbord of de schermknoppen. Bij Pong en Breakout werken ook je muis en vinger; 2048 kun je swipen.</p><p>Met het hartje bewaar je een game bij je favorieten voor deze sessie. Bij <strong>Laatst gespeeld</strong> vind je games die je hebt geopend. Liever een verrassing? Gooi de dobbelsteen!</p><p>Met <strong>Pauze</strong> zet je bewegende games stil. Bij het verlaten van het tabblad pauzeren ze automatisch. <strong>Opnieuw</strong> start een nieuw potje.</p><p>Geen account nodig. Favorieten en scores worden niet permanent opgeslagen.</p><button class="button button-lime" id="help-done"><svg><use href="#i-play"/></svg>Begrepen, spelen maar!</button></dialog>
 </body>
 </html>

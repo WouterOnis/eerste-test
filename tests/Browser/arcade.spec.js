@@ -2,6 +2,8 @@ import { test, expect } from "@playwright/test";
 
 const ids = [
     "pacman",
+    "asteroids",
+    "frogger",
     "tetris",
     "invaders",
     "snake",
@@ -26,14 +28,14 @@ test.afterEach(async ({ page }) => {
 test("collection navigation, search, reset and favorites work", async ({
     page,
 }) => {
-    await expect(page.locator(".game-card:visible")).toHaveCount(9);
-    await expect(page.locator(".new-stamp")).toHaveCount(4);
+    await expect(page.locator(".game-card:visible")).toHaveCount(11);
+    await expect(page.locator(".new-stamp")).toHaveCount(6);
     await page.locator("#game-search").fill("space");
     await expect(page.locator(".game-card:visible")).toHaveCount(1);
     await page.locator("#game-search").fill("niet gevonden");
     await expect(page.locator("#empty-state")).toBeVisible();
     await page.locator("#reset-filters").click();
-    await expect(page.locator(".game-card:visible")).toHaveCount(9);
+    await expect(page.locator(".game-card:visible")).toHaveCount(11);
     await page.locator('[data-favorite="pong"]').click();
     await page.locator('[data-view="favorites"]').click();
     await expect(page.locator(".game-card:visible")).toHaveCount(1);
@@ -47,12 +49,12 @@ test("collection navigation, search, reset and favorites work", async ({
     await page.locator('.filter[data-category="puzzle"]').click();
     await expect(page.locator(".game-card:visible")).toHaveCount(3);
     await page.locator('.filter[data-category="arcade"]').click();
-    await expect(page.locator(".game-card:visible")).toHaveCount(5);
+    await expect(page.locator(".game-card:visible")).toHaveCount(7);
     await page.locator('.filter[data-category="reflex"]').click();
     await expect(page.locator(".game-card:visible")).toHaveCount(1);
 });
 
-test("all nine games open and restart, animated games pause", async ({
+test("all eleven games open and restart, animated games pause", async ({
     page,
 }) => {
     const errors = [];
@@ -69,7 +71,7 @@ test("all nine games open and restart, animated games pause", async ({
             await page.locator("#pause-game").click();
         }
         await page.locator("#restart-game").click();
-        if (["pong", "breakout", "invaders", "tetris"].includes(id))
+        if (["pong", "breakout", "invaders", "asteroids", "tetris"].includes(id))
             await page.locator("#action-game").click();
         if (!["memory", "reaction"].includes(id)) {
             const direction = id === "pong" ? "down" : "left";
@@ -79,7 +81,7 @@ test("all nine games open and restart, animated games pause", async ({
         await expect(page.locator("#game-dialog")).not.toBeVisible();
     }
     await page.locator('[data-view="recent"]').click();
-    await expect(page.locator(".game-card:visible")).toHaveCount(9);
+    await expect(page.locator(".game-card:visible")).toHaveCount(11);
     expect(errors).toEqual([]);
 });
 

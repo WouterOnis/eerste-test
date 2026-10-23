@@ -850,6 +850,8 @@ dialog::backdrop {
 .game-stage {
     background: #191c24;
     border: var(--border);
+    border-radius: 14px;
+    box-shadow: 0 5px 0 #191c24, 0 12px 24px #191c2425;
     position: relative;
     overflow: hidden;
     min-height: 260px;
@@ -930,17 +932,29 @@ dialog::backdrop {
 }
 .memory-tile {
     height: 76px;
-    background: #add0a3;
+    background: linear-gradient(145deg, #c3e4b8, #88af80);
+    border-radius: 12px;
+    box-shadow:
+        inset 0 2px 1px #ffffff90,
+        inset 0 -5px 0 #00000020,
+        0 5px 0 #45613e,
+        0 8px 12px #00000035;
+    transition: transform 160ms ease, box-shadow 160ms ease;
     color: var(--ink);
     border: 2px solid #fff7;
     font-size: 30px;
     touch-action: manipulation;
 }
 .memory-tile.revealed {
-    background: #f6d965;
+    transform: translateY(3px);
+    background: linear-gradient(145deg, #fff0a0, #e9bd48);
+    box-shadow:
+        inset 0 2px 1px #ffffff90,
+        inset 0 -3px 0 #00000020,
+        0 2px 0 #886e30;
 }
 .memory-tile.matched {
-    background: var(--lime);
+    background: linear-gradient(145deg, #deffa4, var(--lime));
     opacity: 1;
     border-color: #71953c;
 }
@@ -956,6 +970,9 @@ dialog::backdrop {
     border: 0;
     padding: 22px;
     background: #ef866b;
+    background-image: radial-gradient(ellipse at 30% 20%, #ffffff45, transparent 65%);
+    box-shadow: inset 0 3px 0 #ffffff55, inset 0 -8px 0 #00000018;
+    text-shadow: 0 1px #ffffff55;
     color: var(--ink);
     font-size: 25px;
     font-weight: 900;
@@ -971,13 +988,13 @@ dialog::backdrop {
     line-height: 1.6;
 }
 .reaction-target.waiting {
-    background: #f6d965;
+    background-color: #f6d965;
 }
 .reaction-target.ready {
-    background: var(--lime);
+    background-color: var(--lime);
 }
 .reaction-target.result {
-    background: #a8ccef;
+    background-color: #a8ccef;
 }
 .board-2048 {
     display: grid;
@@ -997,37 +1014,44 @@ dialog::backdrop {
     font-size: clamp(23px, 5vw, 36px);
     font-weight: 900;
     border: 2px solid #191c24;
+    border-radius: 10px;
+    box-shadow:
+        inset 0 2px 1px #ffffff65,
+        inset 0 -5px 0 #00000020,
+        0 4px 0 #10171d,
+        0 7px 10px #00000040;
+    background-image: linear-gradient(145deg, #ffffff22, #0000001a);
 }
 .tile-2048[data-value="2"] {
-    background: #f5f1e8;
+    background-color: #f5f1e8;
 }
 .tile-2048[data-value="4"] {
-    background: #f6d965;
+    background-color: #f6d965;
 }
 .tile-2048[data-value="8"] {
-    background: #f5b369;
+    background-color: #f5b369;
 }
 .tile-2048[data-value="16"] {
-    background: #ef866b;
+    background-color: #ef866b;
 }
 .tile-2048[data-value="32"] {
-    background: #f1abc2;
+    background-color: #f1abc2;
 }
 .tile-2048[data-value="64"] {
-    background: #b6a0df;
+    background-color: #b6a0df;
 }
 .tile-2048[data-value="128"] {
-    background: #a8ccef;
+    background-color: #a8ccef;
 }
 .tile-2048[data-value="256"] {
-    background: #9dd5ba;
+    background-color: #9dd5ba;
 }
 .tile-2048[data-value="512"] {
-    background: #b9d693;
+    background-color: #b9d693;
 }
 .tile-2048[data-value="1024"],
 .tile-2048[data-value="2048"] {
-    background: var(--lime);
+    background-color: var(--lime);
     font-size: 24px;
 }
 .help-dialog {
@@ -1803,5 +1827,11 @@ dialog::backdrop {
     .filter svg {
         width: 11px;
         height: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .memory-tile {
+        transition: none;
     }
 }

@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class ArcadeTest extends TestCase
 {
-    public function test_arcade_is_public_and_contains_all_nine_games(): void
+    public function test_arcade_is_public_and_contains_all_eleven_games(): void
     {
         $this->get('/')
             ->assertOk()
@@ -22,6 +22,8 @@ class ArcadeTest extends TestCase
             ->assertSee('data-game="pong"', false)
             ->assertSee('data-game="invaders"', false)
             ->assertSee('data-game="2048"', false)
+            ->assertSee('data-game="asteroids"', false)
+            ->assertSee('data-game="frogger"', false)
             ->assertSee('id="game-dialog"', false);
     }
 

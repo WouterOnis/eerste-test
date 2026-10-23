@@ -1,3 +1,5 @@
+import { raised, sphere, backdrop, gradient } from "./game-drawing.js";
+import { createAsteroids, createFrogger, renderAsteroids, renderFrogger } from "./extra-games.js";
 import {
     createTetris,
     createPong,
@@ -92,8 +94,20 @@ const canvasGames = {
         draw: drawInvaders,
     },
 };
-const continuousGames = ["breakout", "pong", "invaders"];
+const continuousGames = ["breakout", "pong", "invaders", "asteroids"];
+Object.assign(canvasGames, {
+    asteroids: { factory: createAsteroids, width: 480, height: 440, interval: () => 1000 / 60, draw: drawAsteroids },
+    frogger: { factory: createFrogger, width: 480, height: 440, interval: () => 1000 / 60, draw: drawFrogger },
+});
 Object.assign(games, {
+    asteroids: {
+        title: "Asteroids",
+        instructions: "← → of A/D draaien, ↑ of W gas geven, ↓ of S remmen. Houd spatie of Vuur ingedrukt om te schieten. Splits de rotsen en overleef zoveel mogelijk golven!",
+    },
+    frogger: {
+        title: "Frogger",
+        instructions: "Spring met de pijltjestoetsen, WASD of schermknoppen. Ontwijk auto's en vaar mee op boomstammen. Vul alle vijf plekken aan de overkant; per oversteek heb je 30 seconden.",
+    },
     tetris: {
         title: "Tetris",
         instructions:
@@ -290,15 +304,11 @@ function createCanvas(width, height) {
     canvas.focus();
 }
 function roundRect(x, y, width, height, radius, color) {
-    context.fillStyle = color;
-    context.beginPath();
-    context.roundRect(x, y, width, height, radius);
-    context.fill();
+    raised(context, x, y, width, height, radius, color);
 }
 function drawSnake() {
     const cell = 24;
-    context.fillStyle = "#13221e";
-    context.fillRect(0, 0, 480, 480);
+    backdrop(context, 480, 480, "#234a3c");
     context.strokeStyle = "#ffffff05";
     context.lineWidth = 1;
     for (let i = 0; i <= 480; i += cell) {
@@ -356,18 +366,14 @@ function drawSnake() {
           : "Druk op een richting om te starten.";
 }
 function drawBreakout() {
-    context.fillStyle = "#221b23";
-    context.fillRect(0, 0, 480, 380);
+    backdrop(context, 480, 380, "#49334a");
     const colors = ["#f0989c", "#f4b184", "#edcf8b", "#b2d794"];
     engine.bricks.forEach((brick) => {
         if (brick.alive)
             roundRect(brick.x, brick.y, brick.w, brick.h, 4, colors[brick.row]);
     });
     roundRect(engine.paddle, 347, 90, 12, 6, "#c3a3eb");
-    context.beginPath();
-    context.arc(engine.ball.x, engine.ball.y, 7, 0, Math.PI * 2);
-    context.fillStyle = "#fff4d5";
-    context.fill();
+    sphere(context, engine.ball.x, engine.ball.y, 7, "#fff4d5");
     stat.textContent = `Score: ${engine.score} · Levens: ${engine.lives}`;
     status.textContent = engine.ended
         ? engine.won
@@ -379,14 +385,12 @@ function drawBreakout() {
 }
 function drawPacman(time) {
     const cell = 24;
-    context.fillStyle = "#111722";
-    context.fillRect(0, 0, 456, 456);
+    backdrop(context, 456, 456, "#202e46");
     MAZE.forEach((row, y) =>
         [...row].forEach((tile, x) => {
             if (tile === "#") {
                 roundRect(x * cell + 2, y * cell + 2, 20, 20, 4, "#283852");
-                context.strokeStyle = "#49618a";
-                context.stroke();
+
             }
         }),
     );
@@ -422,8 +426,10 @@ function drawPacman(time) {
     context.moveTo(0, 0);
     context.arc(0, 0, 10, mouth, Math.PI * 2 - mouth);
     context.closePath();
-    context.fillStyle =
-        engine.safe > 0 && Math.floor(time / 120) % 2 ? "#fff1b5" : "#f3d268";
+    context.fillStyle = gradient(context, -8, -9, 10, 24,
+        engine.safe > 0 && Math.floor(time / 120) % 2 ? "#fff1b5" : "#ffe177");
+    context.shadowColor = "#f3d26860";
+    context.shadowBlur = 9;
     context.fill();
     context.restore();
     engine.ghosts.forEach((ghost, i) => {
@@ -491,6 +497,19 @@ function drawInvaders(time) {
         : engine.started
           ? "Houd spatie of de vuurknop ingedrukt. Ontwijk de rode kogels!"
           : "Druk op spatie of kies Vuur om je missie te starten.";
+}
+function drawAsteroids(time) {
+    renderAsteroids(context, engine, time);
+    stat.textContent = `Score: ${engine.score} · Levens: ${engine.lives} · Golf: ${engine.level}`;
+    status.textContent = engine.ended ? "Game over! Probeer opnieuw voor een hogere score."
+        : engine.started ? "Blijf bewegen en splits de rotsen!" : "Geef gas of schiet om te starten.";
+}
+function drawFrogger() {
+    renderFrogger(context, engine);
+    stat.textContent = `Score: ${engine.score} · Levens: ${engine.lives} · Tijd: ${Math.ceil(engine.remaining / 60)} s`;
+    status.textContent = engine.ended
+        ? engine.won ? "Alle vijf plekken gevuld! Gewonnen." : "Game over! Probeer het opnieuw."
+        : engine.started ? `Nog ${5 - engine.homes.length} plekken. Pas op voor verkeer en water!` : "Druk op een richting om te starten.";
 }
 function animate(time) {
     if (!dialog.open || !engine) return;
@@ -773,20 +792,21 @@ function configureControls(id) {
               ["left", "right"].includes(button.dataset.direction);
     });
     $('[data-control-label="up"]').textContent =
-        id === "tetris" ? "Draaien" : "Omhoog";
+        id === "asteroids" ? "Gas" : id === "tetris" ? "Draaien" : "Omhoog";
     $('[data-control-label="down"]').textContent =
-        id === "tetris" ? "Zakken" : "Omlaag";
+        id === "asteroids" ? "Remmen" : id === "tetris" ? "Zakken" : "Omlaag";
     const labels = {
         tetris: "Drop blok",
         pong: "Start bal",
         breakout: "Start bal",
         invaders: "Vuur",
+        asteroids: "Vuur",
     };
     $("#action-game").hidden = !labels[id];
     $("#action-game span").textContent = labels[id] || "Actie";
 }
 function installPointerControls(id) {
-    if (!continuousGames.includes(id)) return;
+    if (!["breakout", "pong", "invaders"].includes(id)) return;
     const point = (event) => {
         const bounds = canvas.getBoundingClientRect();
         const value =
@@ -882,7 +902,7 @@ $("#restart-game").addEventListener("click", () => startGame(currentId));
 pauseButton.addEventListener("click", () => setPaused(!paused));
 function handleDirection(direction, held = false) {
     if (!engine || paused || engine.ended) return;
-    if (["snake", "pacman", "2048"].includes(currentId)) {
+    if (["snake", "pacman", "2048", "frogger"].includes(currentId)) {
         engine.turn(direction);
         if (currentId === "2048") render2048();
     } else if (currentId === "tetris") {
@@ -890,6 +910,14 @@ function handleDirection(direction, held = false) {
         else if (direction === "down") engine.drop();
         else engine.move(direction === "left" ? -1 : 1);
         drawTetris();
+    } else if (currentId === "asteroids") {
+        if (held) engine[direction] = true;
+        else if (direction === "left" || direction === "right") engine.ship.angle += direction === "left" ? -0.2 : 0.2;
+        else if (direction === "up") {
+            engine.ship.vx += Math.cos(engine.ship.angle) * 0.5;
+            engine.ship.vy += Math.sin(engine.ship.angle) * 0.5;
+            engine.started = true;
+        } else { engine.ship.vx *= 0.7; engine.ship.vy *= 0.7; }
     } else if (currentId === "pong") {
         if (!["up", "down"].includes(direction)) return;
         if (held) engine[direction] = true;
@@ -910,7 +938,7 @@ function performAction() {
     if (currentId === "tetris") {
         engine.drop(true);
         drawTetris();
-    } else if (currentId === "invaders") engine.fire();
+    } else if (["invaders", "asteroids"].includes(currentId)) engine.fire();
     else if (["pong", "breakout"].includes(currentId)) engine.launch();
 }
 const keys = {
@@ -943,13 +971,13 @@ document.addEventListener("keydown", (event) => {
     }
     if (event.code === "Space" && document.activeElement.tagName !== "BUTTON") {
         event.preventDefault();
-        if (event.repeat && currentId !== "invaders") return;
+        if (event.repeat && !["invaders", "asteroids"].includes(currentId)) return;
         if (
-            ["invaders", "tetris"].includes(currentId) ||
+            ["invaders", "asteroids", "tetris"].includes(currentId) ||
             (["pong", "breakout"].includes(currentId) && !engine.started)
         ) {
             performAction();
-            if (currentId === "invaders" && !paused && !engine.ended)
+            if (["invaders", "asteroids"].includes(currentId) && !paused && !engine.ended)
                 engine.firing = true;
         } else setPaused(!paused);
     }
@@ -959,7 +987,7 @@ document.addEventListener("keyup", (event) => {
     const direction = keys[event.key] || keys[event.key.toLowerCase()];
     if (continuousGames.includes(currentId) && direction)
         engine[direction] = false;
-    if (currentId === "invaders" && event.code === "Space")
+    if (["invaders", "asteroids"].includes(currentId) && event.code === "Space")
         engine.firing = false;
 });
 $$("[data-direction]").forEach((button) => {
@@ -988,7 +1016,7 @@ $$("[data-direction]").forEach((button) => {
 });
 $("#action-game").addEventListener("click", performAction);
 $("#action-game").addEventListener("pointerdown", (event) => {
-    if (currentId !== "invaders" || !engine || paused || engine.ended) return;
+    if (!["invaders", "asteroids"].includes(currentId) || !engine || paused || engine.ended) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     engine.firing = true;
